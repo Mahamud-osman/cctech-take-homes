@@ -7,12 +7,16 @@ Welcome to the CC Tech Engineering Take-Home Challenges repository. This collect
 This repository contains the following take-home challenges:
 
 1. **DevSecOps Engineer: Containerized Architecture with RDS**
-   - File: [aws-devops-role.md](aws-devops-role.md)
+   - File: [README.md](aws-devops-role.md)
    - Focus: Infrastructure as code, containerization, security, and CI/CD pipeline setup using AWS services
 
 2. **DevOps Engineer: Serving a Static Site with CI/CD**
-   - File: [aws-static-website.md](aws-static-website.md)
+   - File: [README.md](aws-static-website.md)
    - Focus: Infrastructure as code, S3 static website hosting, CloudFront distribution, and CI/CD pipeline setup
+     
+3. **DevSecOps Engineer Assessment: Containerized Next.js Application with RDS**
+   - File: [README.md](./aws-devops-ecs/README.md)
+   - Focus: Infrastructure as code, containerization, security, and CI/CD pipeline setup using AWS services
 
 ## Purpose
 

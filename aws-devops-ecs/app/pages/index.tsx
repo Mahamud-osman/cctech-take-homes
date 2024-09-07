@@ -1,3 +1,4 @@
+// File: pages/index.tsx
 import { useState, useEffect } from 'react'
 
 export default function Home() {
@@ -12,15 +13,21 @@ export default function Home() {
 
   return (
     <div>
-           <main>
+      <main>
         <h1>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to CC Tech DevSecOps Challenge
         </h1>
         <p>
-          Hello World from CC Tech!
+          Innovating with Security and Efficiency
         </p>
         <p>
-          Database Status: {dbStatus}
+          Database Connection Status: {dbStatus} 
+        </p>
+        <p>
+          This sample application demonstrates a basic Next.js setup with database connectivity.
+        </p>
+        <p>
+          Your task is to deploy this securely in an AWS environment. Good luck!
         </p>
       </main>
     </div>

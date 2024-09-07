@@ -14,9 +14,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const client = await pool.connect()
     const result = await client.query('SELECT 1')
     client.release()
-    res.status(200).json({ message: 'Successfully connected to the database' })
+    res.status(200).json({ message: 'Successfully connected to the database', success: true })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ message: 'Failed to connect to the database' })
+    res.status(500).json({ message: 'Failed to connect to the database', success: false })
   }
 }

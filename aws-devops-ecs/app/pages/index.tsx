@@ -3,13 +3,25 @@ import { useState, useEffect } from 'react'
 
 export default function Home() {
   const [dbStatus, setDbStatus] = useState<string>('Checking...')
+  const [isConnected, setIsConnected] = useState<boolean | null>(null)
 
   useEffect(() => {
     fetch('/api/db-check')
       .then(res => res.json())
-      .then(data => setDbStatus(data.message))
-      .catch(() => setDbStatus('Failed to connect to database'))
+      .then(data => {
+        setDbStatus(data.message)
+        setIsConnected(data.success)
+      })
+      .catch(() => {
+        setDbStatus('Failed to connect to database')
+        setIsConnected(false)
+      })
   }, [])
+
+  const getStatusIcon = () => {
+    if (isConnected === null) return '⏳' // Hourglass for checking
+    return isConnected ? '🟢' : '🔴'  // Green circle for success, red circle for failure
+  }
 
   return (
     <div>
@@ -21,7 +33,7 @@ export default function Home() {
           Innovating with Security and Efficiency
         </p>
         <p>
-          Database Connection Status: {dbStatus} 
+          Database Connection Status: {getStatusIcon()} {dbStatus}
         </p>
         <p>
           This sample application demonstrates a basic Next.js setup with database connectivity.

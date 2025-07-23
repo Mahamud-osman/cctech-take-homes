@@ -45,7 +45,7 @@ This assessment evaluates your DevSecOps skills, focusing on infrastructure as c
 - Secure all network traffic using appropriate security groups
 - Ensure secure transmission of database credentials from Secrets Manager to the application
 
-### 6. CI/CD Pipeline
+### 6. CI/CD Pipeline (Optional)
 Set up a GitHub Actions workflow with the following stages:
 a. Trigger: On push to the main branch
 b. Build and Push: 
@@ -63,22 +63,19 @@ Organize your repository as follows:
 - `README.md`: Project documentation
 
 ## Important Notes
-- Prioritize security in your implementation
-- Provide clear comments in your code
-- In your documentation, explain:
-  * Your approach to securely managing database credentials
-  * How you've ensured the principle of least privilege in your IAM configurations
-  * Any additional security measures you've implemented
-  * How you would approach monitoring and logging in a production environment
+- Ensure your Terraform code is modular and follows best practices
+- Follow the principle of least privilege for all IAM roles and policies
+- Be prepared to explain each component of your solution and how they work together
+- Follow the principle of least privilege for all IAM roles and policies
+- Provide clear comments in your code and comprehensive documentation in your README.md
 
 ## Submission Instructions
-1. Fork the provided GitHub repository and implement your solution
-2. Ensure all your infrastructure-as-code and CI/CD configurations are committed
-3. Update the README.md with:
-   - Clear instructions on how to deploy your solution
-   - Any assumptions or decisions you made during implementation
-   - Explanations requested in the "Important Notes" section
-4. Submit the link to your GitHub repository
+- Create a new GitHub repository for this project
+- Ensure all your code is committed to your GitHub repository
+- Provide clear instructions in your README.md on how to deploy your solution
+- Email the following to interview@cctechconsulting.com with the subject "DevOps ECS Challenge Submission - [Your Name]":
+- Link to your GitHub repository
+- A brief explanation of your approach and any challenges you faced
 
 ## Evaluation Criteria
 Your submission will be evaluated based on:
@@ -87,8 +84,14 @@ Your submission will be evaluated based on:
 3. Proper implementation of containerization and ECS deployment
 4. Successful integration of the application with RDS
 5. Security considerations and implementation
-6. Completeness and efficiency of the CI/CD pipeline
-7. Code quality, organization, and documentation
-8. Ability to explain your design decisions and approach
+6. Code quality, organization, and documentation
+7. Ability to explain your design decisions and approach during the demo
+
+## Demo Expectations
+During the follow-up call, be prepared to:
+- Show that each requirement was met and explain how
+- Demonstrate the end-to-end process and prove it's working
+- Answer questions about your solution and the components involved
+
 
 Good luck! We look forward to seeing your solution.

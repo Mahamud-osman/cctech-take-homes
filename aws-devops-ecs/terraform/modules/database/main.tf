@@ -1,12 +1,6 @@
-# Random password for database
-resource "random_password" "db_password" {
-  length  = 16
-  special = true
-}
-
 # Database Secret in AWS Secrets Manager
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name                    = "${var.project_name}-${var.environment}-db-credentials"
+  name                    = "${var.project_name}-${var.environment}-db-credentials-v2"
   description             = "Database credentials for ${var.project_name} ${var.environment}"
   recovery_window_in_days = 7
 
@@ -15,21 +9,9 @@ resource "aws_secretsmanager_secret" "db_credentials" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "db_credentials" {
-  secret_id = aws_secretsmanager_secret.db_credentials.id
-  secret_string = jsonencode({
-    username = "postgres"
-    password = random_password.db_password.result
-    engine   = "postgres"
-    host     = aws_db_instance.postgres.endpoint
-    port     = 5432
-    dbname   = aws_db_instance.postgres.db_name
-  })
-}
-
 # Database Subnet Group
 resource "aws_db_subnet_group" "main" {
-  name       = "${var.project_name}-${var.environment}-db-subnet-group"
+  name       = "${var.project_name}-${var.environment}-db-subnet-group-v2"
   subnet_ids = var.private_subnet_ids
 
   tags = {
@@ -68,17 +50,17 @@ resource "aws_security_group" "rds" {
 
 # RDS PostgreSQL Instance
 resource "aws_db_instance" "postgres" {
-  identifier             = "${var.project_name}-${var.environment}-postgres"
+  identifier             = "${var.project_name}-${var.environment}-postgres-v2"
   allocated_storage      = var.db_allocated_storage
   max_allocated_storage  = var.db_allocated_storage * 2
   storage_type           = "gp2"
   storage_encrypted      = true
   engine                 = "postgres"
-  engine_version         = "15.4"
+  engine_version         = "15.7"
   instance_class         = var.db_instance_class
   db_name                = "${replace(var.project_name, "-", "")}${var.environment}"
-  username               = "postgres"
-  password               = random_password.db_password.result
+  username                        = "postgres"
+  manage_master_user_password     = true
   parameter_group_name   = "default.postgres15"
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]

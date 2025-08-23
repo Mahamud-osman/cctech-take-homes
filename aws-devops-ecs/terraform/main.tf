@@ -14,12 +14,15 @@ module "networking" {
 module "compute" {
   source = "./modules/compute"
 
-  vpc_id              = module.networking.vpc_id
-  private_subnet_ids  = module.networking.private_subnet_ids
-  public_subnet_ids   = module.networking.public_subnet_ids
-  environment         = var.environment
-  project_name        = var.project_name
-  application_name    = var.application_name
+  vpc_id                = module.networking.vpc_id
+  private_subnet_ids    = module.networking.private_subnet_ids
+  public_subnet_ids     = module.networking.public_subnet_ids
+  environment           = var.environment
+  project_name          = var.project_name
+  application_name      = var.application_name
+  database_secret_arn   = module.database.database_secret_arn
+  database_endpoint     = module.database.rds_endpoint
+  database_name         = module.database.database_name
 }
 
 # Database Module

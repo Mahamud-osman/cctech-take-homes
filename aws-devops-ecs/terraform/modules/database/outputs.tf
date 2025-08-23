@@ -1,6 +1,6 @@
 output "rds_endpoint" {
   description = "RDS instance endpoint"
-  value       = aws_db_instance.postgres.endpoint
+  value       = aws_db_instance.postgres.address
 }
 
 output "rds_port" {
@@ -15,5 +15,5 @@ output "database_name" {
 
 output "database_secret_arn" {
   description = "ARN of the database secret"
-  value       = aws_secretsmanager_secret.db_credentials.arn
+  value       = aws_db_instance.postgres.master_user_secret[0].secret_arn
 }

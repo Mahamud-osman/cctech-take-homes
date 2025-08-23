@@ -106,8 +106,8 @@ resource "aws_security_group" "app" {
 
   ingress {
     description     = "HTTP from ALB"
-    from_port       = 80
-    to_port         = 80
+    from_port       = 3000
+    to_port         = 3000
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
@@ -130,7 +130,7 @@ resource "aws_security_group" "app" {
 
 # Application Load Balancer
 resource "aws_lb" "main" {
-  name               = "${var.project_name}-${var.environment}-alb"
+  name               = "${var.project_name}-${var.environment}-alb-v2"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
@@ -145,8 +145,8 @@ resource "aws_lb" "main" {
 
 # ALB Target Group
 resource "aws_lb_target_group" "app" {
-  name        = "${var.project_name}-${var.environment}-tg"
-  port        = 80
+  name        = "${var.project_name}-${var.environment}-tg-v2"
+  port        = 3000
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -156,7 +156,7 @@ resource "aws_lb_target_group" "app" {
     healthy_threshold   = 2
     interval            = 30
     matcher             = "200"
-    path                = "/health"
+    path                = "/"
     port                = "traffic-port"
     protocol            = "HTTP"
     timeout             = 5
@@ -164,7 +164,11 @@ resource "aws_lb_target_group" "app" {
   }
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-tg"
+    Name = "${var.project_name}-${var.environment}-tg-v2"
+  }
+  
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -182,7 +186,7 @@ resource "aws_lb_listener" "main" {
 
 # ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "${var.project_name}-${var.environment}-ecs-task-execution-role"
+  name = "${var.project_name}-${var.environment}-ecs-task-execution-role-v2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -205,7 +209,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 
 # ECS Task Role
 resource "aws_iam_role" "ecs_task_role" {
-  name = "${var.project_name}-${var.environment}-ecs-task-role"
+  name = "${var.project_name}-${var.environment}-ecs-task-role-v2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -216,6 +220,44 @@ resource "aws_iam_role" "ecs_task_role" {
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
+      }
+    ]
+  })
+}
+
+# IAM Policy for Secrets Manager access
+resource "aws_iam_role_policy" "ecs_task_secrets_policy" {
+  name = "${var.project_name}-${var.environment}-ecs-task-secrets-policy-v2"
+  role = aws_iam_role.ecs_task_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = var.database_secret_arn
+      }
+    ]
+  })
+}
+
+# IAM Policy for ECS Task Execution Role to access Secrets Manager
+resource "aws_iam_role_policy" "ecs_execution_secrets_policy" {
+  name = "${var.project_name}-${var.environment}-ecs-execution-secrets-policy-v2"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = var.database_secret_arn
       }
     ]
   })
@@ -238,8 +280,46 @@ resource "aws_ecs_task_definition" "app" {
       
       portMappings = [
         {
-          containerPort = 80
+          containerPort = 3000
           protocol      = "tcp"
+        }
+      ]
+
+      secrets = [
+        {
+          name      = "DB_USER"
+          valueFrom = "${var.database_secret_arn}:username::"
+        },
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "${var.database_secret_arn}:password::"
+        }
+      ]
+
+      environment = [
+        {
+          name  = "NODE_ENV"
+          value = "production"
+        },
+        {
+          name  = "DB_HOST"
+          value = var.database_endpoint
+        },
+        {
+          name  = "DB_NAME"
+          value = var.database_name
+        },
+        {
+          name  = "DB_PORT"
+          value = "5432"
+        },
+        {
+          name  = "PGSSLMODE"
+          value = "require"
+        },
+        {
+          name  = "NODE_TLS_REJECT_UNAUTHORIZED"
+          value = "0"
         }
       ]
 
@@ -281,14 +361,14 @@ resource "aws_ecs_service" "app" {
 
   network_configuration {
     security_groups  = [aws_security_group.app.id]
-    subnets          = var.private_subnet_ids
-    assign_public_ip = false
+    subnets          = var.public_subnet_ids
+    assign_public_ip = true
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
     container_name   = var.application_name
-    container_port   = 80
+    container_port   = 3000
   }
 
   depends_on = [aws_lb_listener.main]

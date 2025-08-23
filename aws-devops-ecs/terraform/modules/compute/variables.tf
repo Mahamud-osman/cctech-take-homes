@@ -27,3 +27,18 @@ variable "application_name" {
   description = "Name of the application"
   type        = string
 }
+
+variable "database_secret_arn" {
+  description = "ARN of the database secret in Secrets Manager"
+  type        = string
+}
+
+variable "database_endpoint" {
+  description = "RDS database endpoint"
+  type        = string
+}
+
+variable "database_name" {
+  description = "RDS database name"
+  type        = string
+}

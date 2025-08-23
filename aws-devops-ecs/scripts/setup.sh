@@ -56,3 +56,20 @@ if ! aws dynamodb describe-table --table-name "${LOCK_TABLE}" --region $REGION >
 else
     echo "DynamoDB table already exists: ${LOCK_TABLE}"
 fi
+
+# Navigate to terraform directory and run Terraform commands
+echo ""
+echo "Initializing and applying Terraform configuration..."
+cd terraform
+
+echo "Running terraform init..."
+terraform init -backend-config="../environments/${ENVIRONMENT}/backend.tf"
+
+echo "Running terraform plan..."
+terraform plan -var-file="../environments/${ENVIRONMENT}/terraform.tfvars"
+
+echo "Running terraform apply..."
+terraform apply -var-file="../environments/${ENVIRONMENT}/terraform.tfvars" -auto-approve
+
+echo ""
+echo "Terraform deployment completed for environment: ${ENVIRONMENT}"
